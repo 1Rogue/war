@@ -38,6 +38,7 @@ import com.tommytony.war.config.WarzoneConfig;
 import com.tommytony.war.config.WarzoneConfigBag;
 import com.tommytony.war.event.WarBlockListener;
 import com.tommytony.war.event.WarEntityListener;
+import com.tommytony.war.event.WarKitSelectorListener;
 import com.tommytony.war.event.WarPlayerListener;
 import com.tommytony.war.event.WarServerListener;
 import com.tommytony.war.event.WarTagListener;
@@ -72,6 +73,7 @@ public class War extends JavaPlugin {
 	private WarEntityListener entityListener = new WarEntityListener();
 	private WarBlockListener blockListener = new WarBlockListener();
 	private WarServerListener serverListener = new WarServerListener();
+        private WarKitSelectorListener kitListener = new WarKitSelectorListener();
 	
 	private WarCommandHandler commandHandler = new WarCommandHandler();
 	private PluginDescriptionFile desc = null;
@@ -159,6 +161,7 @@ public class War extends JavaPlugin {
 		pm.registerEvents(this.entityListener, this);
 		pm.registerEvents(this.blockListener, this);
 		pm.registerEvents(this.serverListener, this);
+                pm.registerEvents(this.kitListener, this);
 		if (pm.isPluginEnabled("TagAPI")) {
 			try {
 				Class.forName("org.kitteh.tag.TagAPI");
