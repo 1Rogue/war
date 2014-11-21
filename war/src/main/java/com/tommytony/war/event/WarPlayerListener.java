@@ -855,7 +855,7 @@ public class WarPlayerListener implements Listener {
         }
     }
 
-    @EventHandler
+    //@EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         if (War.war.isLoaded() && event.isSneaking()) {
             Warzone playerWarzone = Warzone.getZoneByLocation(event.getPlayer());
