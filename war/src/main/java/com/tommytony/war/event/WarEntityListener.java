@@ -483,9 +483,8 @@ public class WarEntityListener implements Listener {
 			return;
 		}
 		if (event.getEntityType() == EntityType.EGG) {
-			LivingEntity shooter = event.getEntity().getShooter();
-			if (shooter instanceof Player) {
-				Player player = (Player) shooter;
+			if (event.getEntity().getShooter() instanceof Player) {
+				Player player = (Player) event.getEntity().getShooter();
 				Warzone zone = Warzone.getZoneByPlayerName(player.getName());
 				Team team = Team.getTeamByPlayerName(player.getName());
 				if (zone != null) {
