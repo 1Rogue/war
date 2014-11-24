@@ -1,5 +1,6 @@
 package com.tommytony.war.event;
 
+import com.codelanx.codelanxlib.inventory.InventoryInterface;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,12 +43,9 @@ import com.tommytony.war.structure.Cake;
 import com.tommytony.war.structure.WarHub;
 import com.tommytony.war.structure.ZoneLobby;
 import com.tommytony.war.utility.Direction;
-import com.tommytony.war.utility.Loadout;
 import com.tommytony.war.utility.LoadoutSelection;
 import com.tommytony.war.volume.Volume;
-
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.File;
 import java.util.logging.Level;
 
 /**
@@ -57,6 +55,14 @@ public class WarPlayerListener implements Listener {
 
     private java.util.Random random = new java.util.Random();
     private HashMap<String, Location> latestLocations = new HashMap<String, Location>();
+    private final InventoryInterface ii;
+
+    public WarPlayerListener() {
+        File f = new File(War.war.getDataFolder(), "kit-selection.yml");
+        this.ii = InventoryInterface.deserialize(War.war, f);
+        
+        //Assign runnables for icons and find way to organize kits
+    }
 
     /**
      * Correctly removes quitting players from warzones
@@ -258,7 +264,7 @@ public class WarPlayerListener implements Listener {
                     && zone.getLoadoutSelections().get(player.getName()).isStillInSpawn()) {
                 event.setUseItemInHand(Result.DENY);
                 event.setCancelled(true);
-				// Replace message with sound to reduce spamminess.
+                // Replace message with sound to reduce spamminess.
                 // Whenever a player dies in the middle of conflict they will
                 // likely respawn still trying to use their items to attack
                 // another player.
@@ -383,7 +389,7 @@ public class WarPlayerListener implements Listener {
         }
 
         if (!protecting) {
-			// zone makers still need to delete their walls
+            // zone makers still need to delete their walls
             // make sure to delete any wall guards as you leave
             for (Warzone zone : War.war.getWarzones()) {
                 zone.dropZoneWallGuardIfAny(player);
@@ -530,7 +536,7 @@ public class WarPlayerListener implements Listener {
             FlagReturn flagReturn = playerTeam.getTeamConfig().resolveFlagReturn();
             if (!playerTeam.isSpawnLocation(playerLoc)) {
                 if (!playerWarzone.isEnoughPlayers() && loadoutSelectionState != null && loadoutSelectionState.isStillInSpawn()) {
-					// Be sure to keep only players that just respawned locked inside the spawn for minplayer/minteams restrictions - otherwise 
+                    // Be sure to keep only players that just respawned locked inside the spawn for minplayer/minteams restrictions - otherwise 
                     // this will conflict with the can't-renter-spawn bump just a few lines below  
                     War.war.badMsg(player, "zone.spawn.minplayers", playerWarzone.getWarzoneConfig().getInt(WarzoneConfig.MINPLAYERS),
                             playerWarzone.getWarzoneConfig().getInt(WarzoneConfig.MINTEAMS));
@@ -544,7 +550,7 @@ public class WarPlayerListener implements Listener {
                     return;
                 }
                 if (playerWarzone.isReinitializing()) {
-					// don't let players wander about outside spawns during reset
+                    // don't let players wander about outside spawns during reset
                     // (they could mess up the blocks that have already been reset
                     // before the start of the new battle)
                     War.war.msg(player, "zone.battle.reset");
@@ -556,7 +562,7 @@ public class WarPlayerListener implements Listener {
                     && (flagReturn.equals(FlagReturn.BOTH) || flagReturn.equals(FlagReturn.SPAWN))
                     && !playerWarzone.isFlagThief(player.getName())) {
 
-				// player is in spawn, but has left already: he should NOT be let back in - kick him out gently
+                // player is in spawn, but has left already: he should NOT be let back in - kick him out gently
                 // if he sticks around too long.
                 // (also, be sure you aren't preventing the flag or cake from being captured)
 //				if (!CantReEnterSpawnJob.getPlayersUnderSuspicion().contains(player.getName())) {
@@ -586,7 +592,7 @@ public class WarPlayerListener implements Listener {
                     playerWarzone.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, playerTeam.getKind().getPotionEffectColor());
                 }
 
-				// Make sure game ends can't occur simultaneously. 
+                // Make sure game ends can't occur simultaneously. 
                 // See Warzone.handleDeath() for details.
                 boolean inSpawn = playerTeam.isSpawnLocation(player.getLocation());
                 boolean inFlag = (playerTeam.getFlagVolume() != null && playerTeam.getFlagVolume().contains(player.getLocation()));
@@ -612,7 +618,7 @@ public class WarPlayerListener implements Listener {
                 }
 
                 if (!playerTeam.getPlayers().contains(player)) {
-					// Make sure player is still part of team, game may have ended while waiting)
+                    // Make sure player is still part of team, game may have ended while waiting)
                     // Ignore the scorers that happened immediately after the game end.
                     return;
                 }
@@ -677,7 +683,7 @@ public class WarPlayerListener implements Listener {
                 // smoky
                 playerWarzone.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 0);
 
-				// Make sure game ends can't occur simultaneously. 
+                // Make sure game ends can't occur simultaneously. 
                 // Not thread safe. See Warzone.handleDeath() for details.
                 boolean inEnemySpawn = false;
                 Team victim = null;
@@ -692,7 +698,7 @@ public class WarPlayerListener implements Listener {
                 }
 
                 if (inEnemySpawn && playerTeam.getPlayers().contains(player)) {
-					// Made sure player is still part of team, game may have ended while waiting.
+                    // Made sure player is still part of team, game may have ended while waiting.
                     // Ignored the scorers that happened immediately after the game end.
                     Bomb bomb = playerWarzone.getBombForThief(player.getName());
 
@@ -767,12 +773,12 @@ public class WarPlayerListener implements Listener {
                     playerWarzone.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, playerTeam.getKind().getPotionEffectColor());
                 }
 
-				// Make sure game ends can't occur simultaneously. 
+                // Make sure game ends can't occur simultaneously. 
                 // Not thread safe. See Warzone.handleDeath() for details.
                 boolean inSpawn = playerTeam.isSpawnLocation(player.getLocation());
 
                 if (inSpawn && playerTeam.getPlayers().contains(player)) {
-					// Made sure player is still part of team, game may have ended while waiting.
+                    // Made sure player is still part of team, game may have ended while waiting.
                     // Ignored the scorers that happened immediately after the game end.
                     boolean hasOpponent = false;
                     for (Team t : playerWarzone.getTeams()) {
@@ -789,7 +795,7 @@ public class WarPlayerListener implements Listener {
                             // Battle already ended or interrupted
                             playerWarzone.respawnPlayer(event, playerTeam, player);
                         } else {
-							// All good - proceed with scoring
+                            // All good - proceed with scoring
                             // Woot! Cake effect: 1 pt + full lifepool
                             playerTeam.addPoint();
                             playerTeam.setRemainingLives(playerTeam.getTeamConfig().resolveInt(TeamConfig.LIFEPOOL));
@@ -855,7 +861,7 @@ public class WarPlayerListener implements Listener {
         }
     }
 
-    //@EventHandler
+    @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         if (War.war.isLoaded() && event.isSneaking()) {
             Warzone playerWarzone = Warzone.getZoneByLocation(event.getPlayer());
@@ -863,19 +869,8 @@ public class WarPlayerListener implements Listener {
             if (playerWarzone != null && playerTeam != null && playerTeam.getInventories().resolveLoadouts().keySet().size() > 1 && playerTeam.isSpawnLocation(event.getPlayer().getLocation())) {
                 if (playerWarzone.getLoadoutSelections().keySet().contains(event.getPlayer().getName())
                         && playerWarzone.getLoadoutSelections().get(event.getPlayer().getName()).isStillInSpawn()) {
-                    LoadoutSelection selection = playerWarzone.getLoadoutSelections().get(event.getPlayer().getName());
-                    List<Loadout> loadouts = new ArrayList<Loadout>(playerTeam.getInventories().resolveNewLoadouts());
-                    for (Iterator<Loadout> it = loadouts.iterator(); it.hasNext();) {
-                        Loadout ldt = it.next();
-                        if (ldt.getName().equals("first")
-                                || (ldt.requiresPermission() && !event.getPlayer().hasPermission(ldt.getPermission()))) {
-                            it.remove();
-                        }
-                    }
-                    int currentIndex = (selection.getSelectedIndex() + 1) % loadouts.size();
-                    selection.setSelectedIndex(currentIndex);
-
-                    playerWarzone.equipPlayerLoadoutSelection(event.getPlayer(), playerTeam, false, true);
+                    //Here's where we're going to assign our new kit via inventory selection
+                    this.ii.openInterface(event.getPlayer());
                 } else {
                     War.war.badMsg(event.getPlayer(), "zone.loadout.reenter");
                 }
