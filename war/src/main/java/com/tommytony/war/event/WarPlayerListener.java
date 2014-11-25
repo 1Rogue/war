@@ -1,6 +1,7 @@
 package com.tommytony.war.event;
 
 import com.codelanx.codelanxlib.inventory.InventoryInterface;
+import com.codelanx.codelanxlib.inventory.InventoryPanel;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,6 +63,12 @@ public class WarPlayerListener implements Listener {
         this.ii = InventoryInterface.deserialize(War.war, f);
         
         //Assign runnables for icons and find way to organize kits
+        this.ii.getPanels().forEach(panel -> panel.setAllExecutions((p, ii, icon) -> {
+            String kit = String.valueOf(icon.getOptions().get("kit-name"));
+            if (kit != null) {
+                
+            }
+        }));
     }
 
     /**
