@@ -9,42 +9,43 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.tommytony.war.Warzone;
 
 public class WarPlayerDeathEvent extends Event {
-	private static final HandlerList handlers = new HandlerList();
-	private Player victim;
-	private Warzone zone;
-	private Entity killer;
-	private DamageCause cause;
 
-	public WarPlayerDeathEvent(Warzone zone, Player victim, Entity killer,
-			DamageCause cause) {
-		this.zone = zone;
-		this.victim = victim;
-		this.killer = killer;
-		this.cause = cause;
-	}
+    private static final HandlerList handlers = new HandlerList();
+    private Player victim;
+    private Warzone zone;
+    private Entity killer;
+    private DamageCause cause;
 
-	public Warzone getZone() {
-		return zone;
-	}
+    public WarPlayerDeathEvent(Warzone zone, Player victim, Entity killer,
+            DamageCause cause) {
+        this.zone = zone;
+        this.victim = victim;
+        this.killer = killer;
+        this.cause = cause;
+    }
 
-	public Entity getKiller() {
-		return killer;
-	}
+    public Warzone getZone() {
+        return zone;
+    }
 
-	public DamageCause getCause() {
-		return cause;
-	}
+    public Entity getKiller() {
+        return killer;
+    }
 
-	public Player getVictim() {
-		return victim;
-	}
+    public DamageCause getCause() {
+        return cause;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public Player getVictim() {
+        return victim;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

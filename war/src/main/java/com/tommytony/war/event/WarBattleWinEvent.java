@@ -9,29 +9,30 @@ import com.tommytony.war.Team;
 import com.tommytony.war.Warzone;
 
 public class WarBattleWinEvent extends Event {
-	private static final HandlerList handlers = new HandlerList();
-	private List<Team> winningTeams;
-	private Warzone zone;
 
-	public WarBattleWinEvent(Warzone zone, List<Team> winningTeams) {
-		this.zone = zone;
-		this.winningTeams = winningTeams;
-	}
+    private static final HandlerList handlers = new HandlerList();
+    private List<Team> winningTeams;
+    private Warzone zone;
 
-	public Warzone getZone() {
-		return zone;
-	}
+    public WarBattleWinEvent(Warzone zone, List<Team> winningTeams) {
+        this.zone = zone;
+        this.winningTeams = winningTeams;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public Warzone getZone() {
+        return zone;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 
-	public List<Team> getWinningTeams() {
-		return winningTeams;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    public List<Team> getWinningTeams() {
+        return winningTeams;
+    }
 }

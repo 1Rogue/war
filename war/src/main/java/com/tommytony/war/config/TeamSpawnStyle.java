@@ -6,23 +6,24 @@ package com.tommytony.war.config;
  *
  */
 public enum TeamSpawnStyle {
-	INVISIBLE,
-	SMALL,
-	FLAT,
-	BIG;
 
-	@Override
-	public String toString() {
-		return super.toString().toLowerCase();
-	}
+    INVISIBLE,
+    SMALL,
+    FLAT,
+    BIG;
 
-	public static TeamSpawnStyle getStyleFromString(String string) {
-		for (TeamSpawnStyle style : TeamSpawnStyle.values()) {
-			if (string.toLowerCase().equals(style.toString())) {
-				return style;
-			}
-		}
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase();
+    }
 
-		return TeamSpawnStyle.SMALL;
-	}
+    public static TeamSpawnStyle getStyleFromString(String string) {
+        for (TeamSpawnStyle style : TeamSpawnStyle.values()) {
+            if (string.toLowerCase().equals(style.toString())) {
+                return style;
+            }
+        }
+
+        return TeamSpawnStyle.SMALL;
+    }
 }

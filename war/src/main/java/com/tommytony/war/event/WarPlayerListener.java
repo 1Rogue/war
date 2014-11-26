@@ -61,12 +61,12 @@ public class WarPlayerListener implements Listener {
     public WarPlayerListener() {
         File f = new File(War.war.getDataFolder(), "kit-selection.yml");
         this.ii = InventoryInterface.deserialize(War.war, f);
-        
+
         //Assign runnables for icons and find way to organize kits
         this.ii.getPanels().forEach(panel -> panel.setAllExecutions((p, ii, icon) -> {
             String kit = String.valueOf(icon.getOptions().get("kit-name"));
             if (kit != null) {
-                
+
             }
         }));
     }

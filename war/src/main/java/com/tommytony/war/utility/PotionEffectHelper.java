@@ -7,17 +7,15 @@ import org.bukkit.potion.PotionEffect;
 
 public class PotionEffectHelper {
 
-	public static void restorePotionEffects(Player player,
-			Collection<PotionEffect> potionEffects) {
-		clearPotionEffects(player);
-		for (PotionEffect effect : potionEffects) {
-			player.addPotionEffect(effect, true);
-		}
-	}
+    public static void restorePotionEffects(Player player,
+            Collection<PotionEffect> potionEffects) {
+        clearPotionEffects(player);
+        potionEffects.forEach(e -> player.addPotionEffect(e, true));
+    }
 
-	public static void clearPotionEffects(Player player) {
-		for (PotionEffect effect : player.getActivePotionEffects()) {
-			player.removePotionEffect(effect.getType());
-		}
-	}
+    public static void clearPotionEffects(Player player) {
+        player.getActivePotionEffects().stream()
+                .map(e -> e.getType())
+                .forEach(player::removePotionEffect);
+    }
 }

@@ -8,23 +8,24 @@ import org.bukkit.event.HandlerList;
 import com.tommytony.war.Team;
 
 public class WarScoreCapEvent extends Event {
-	private static final HandlerList handlers = new HandlerList();
-	private List<Team> winningTeams;
 
-	public List<Team> getWinningTeams() {
-		return winningTeams;
-	}
+    private static final HandlerList handlers = new HandlerList();
+    private List<Team> winningTeams;
 
-	public WarScoreCapEvent(List<Team> winningTeams) {
-		this.winningTeams = winningTeams;
-	}
+    public List<Team> getWinningTeams() {
+        return winningTeams;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public WarScoreCapEvent(List<Team> winningTeams) {
+        this.winningTeams = winningTeams;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

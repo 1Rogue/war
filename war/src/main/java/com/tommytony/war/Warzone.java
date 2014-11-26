@@ -265,7 +265,7 @@ public class Warzone {
     public int saveState(boolean clearArtifacts) {
         if (this.ready()) {
             if (clearArtifacts) {
-		// removed everything to keep save clean
+                // removed everything to keep save clean
                 this.zoneWallGuards.forEach(ZoneWallGuard::deactivate);
                 this.zoneWallGuards.clear();
                 for (Team team : this.teams) {
@@ -618,7 +618,7 @@ public class Warzone {
     private void preventItemHackingThroughOpenedInventory(Player player) {
         InventoryView openedInv = player.getOpenInventory();
         if (openedInv.getType() == InventoryType.CRAFTING) {
-			// prevent abuse of personal crafting slots (this behavior doesn't seem to happen 
+            // prevent abuse of personal crafting slots (this behavior doesn't seem to happen 
             // for containers like workbench and furnace - those get closed properly)
             openedInv.getTopInventory().clear();
         }
@@ -1294,7 +1294,7 @@ public class Warzone {
         this.bombThieves.remove(thief);
     }
 
-	// Cake
+    // Cake
     public void addCakeThief(Cake cake, String cakeThief) {
         this.cakeThieves.put(cakeThief, cake);
         WarPlayerThiefEvent event1 = new WarPlayerThiefEvent(Bukkit.getPlayerExact(cakeThief), WarPlayerThiefEvent.StolenObject.CAKE);
@@ -1484,7 +1484,7 @@ public class Warzone {
     public void equipPlayerLoadoutSelection(Player player, Team playerTeam, boolean isFirstRespawn, boolean isToggle) {
         LoadoutSelection selection = this.getLoadoutSelections().get(player.getName());
         if (selection != null && !this.isRespawning(player) && playerTeam.getPlayers().contains(player)) {
-			// Make sure that inventory resets dont occur if player has already tp'ed out (due to game end, or somesuch) 
+            // Make sure that inventory resets dont occur if player has already tp'ed out (due to game end, or somesuch) 
             // - repawn timer + this method is why inventories were getting wiped as players exited the warzone. 
             List<Loadout> loadouts = playerTeam.getInventories().resolveNewLoadouts();
             List<String> sortedNames = LoadoutYmlMapper.sortNames(Loadout.toLegacyFormat(loadouts));
