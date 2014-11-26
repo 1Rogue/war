@@ -1,7 +1,6 @@
 package com.tommytony.war.event;
 
 import com.codelanx.codelanxlib.inventory.InventoryInterface;
-import com.codelanx.codelanxlib.inventory.InventoryPanel;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,20 +55,6 @@ public class WarPlayerListener implements Listener {
 
     private java.util.Random random = new java.util.Random();
     private HashMap<String, Location> latestLocations = new HashMap<String, Location>();
-    private final InventoryInterface ii;
-
-    public WarPlayerListener() {
-        File f = new File(War.war.getDataFolder(), "kit-selection.yml");
-        this.ii = InventoryInterface.deserialize(War.war, f);
-
-        //Assign runnables for icons and find way to organize kits
-        this.ii.getPanels().forEach(panel -> panel.setAllExecutions((p, ii, icon) -> {
-            String kit = String.valueOf(icon.getOptions().get("kit-name"));
-            if (kit != null) {
-
-            }
-        }));
-    }
 
     /**
      * Correctly removes quitting players from warzones
@@ -877,7 +862,7 @@ public class WarPlayerListener implements Listener {
                 if (playerWarzone.getLoadoutSelections().keySet().contains(event.getPlayer().getName())
                         && playerWarzone.getLoadoutSelections().get(event.getPlayer().getName()).isStillInSpawn()) {
                     //Here's where we're going to assign our new kit via inventory selection
-                    this.ii.openInterface(event.getPlayer());
+                    playerWarzone.openKitSelection(event.getPlayer());
                 } else {
                     War.war.badMsg(event.getPlayer(), "zone.loadout.reenter");
                 }

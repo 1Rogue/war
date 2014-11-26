@@ -1841,4 +1841,14 @@ public class Warzone {
     public boolean isThief(String suspect) {
         return this.isFlagThief(suspect) || this.isBombThief(suspect) || this.isCakeThief(suspect);
     }
+
+    /**
+     * Opens the kit selection menu for the player.
+     * 
+     * @param p The {@link Player} to open a kit menu for 
+     */
+    public void openKitSelection(Player p) {
+        
+    }
+
 }
