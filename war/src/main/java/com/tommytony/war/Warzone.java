@@ -112,6 +112,7 @@ public class Warzone {
     private Location teleport;
     private ZoneLobby lobby;
     private Location rallyPoint;
+    private final Random killSeed = new Random();
 
     private final List<String> authors = new ArrayList<>();
 
@@ -209,10 +210,7 @@ public class Warzone {
     }
 
     public boolean ready() {
-        if (this.volume.hasTwoCorners() && !this.volume.tooSmall() && !this.volume.tooBig()) {
-            return true;
-        }
-        return false;
+        return this.volume.hasTwoCorners() && !this.volume.tooSmall() && !this.volume.tooBig();
     }
 
     public List<Team> getTeams() {
@@ -658,7 +656,7 @@ public class Warzone {
     }
 
     public boolean hasMonument(String monumentName) {
-        return this.monuments.stream().anyMatch(m -> m.getName().startsWith(monumentName));
+        return this.monuments.stream().map(m -> m.getName()).anyMatch(monumentName::startsWith);
     }
 
     public Monument getMonument(String monumentName) {
@@ -671,7 +669,7 @@ public class Warzone {
     }
 
     public boolean hasBomb(String bombName) {
-        return this.bombs.stream().anyMatch(b -> b.getName().equals(bombName));
+        return this.bombs.stream().map(b -> b.getName()).anyMatch(bombName::equals);
     }
 
     public Bomb getBomb(String bombName) {
@@ -684,12 +682,7 @@ public class Warzone {
     }
 
     public boolean hasCake(String cakeName) {
-        for (Cake cake : this.cakes) {
-            if (cake.getName().equals(cakeName)) {
-                return true;
-            }
-        }
-        return false;
+        return this.cakes.stream().map(c -> c.getName()).anyMatch(cakeName::equals);
     }
 
     public Cake getCake(String cakeName) {
@@ -703,20 +696,13 @@ public class Warzone {
 
     public boolean isImportantBlock(Block block) {
         if (this.ready()) {
-            for (Monument m : this.monuments) {
-                if (m.getVolume().contains(block)) {
-                    return true;
-                }
+            if (this.volume.isWallBlock(block)) {
+                return true;
             }
-            for (Bomb b : this.bombs) {
-                if (b.getVolume().contains(block)) {
-                    return true;
-                }
-            }
-            for (Cake c : this.cakes) {
-                if (c.getVolume().contains(block)) {
-                    return true;
-                }
+            if (this.monuments.stream().anyMatch(m -> m.getVolume().contains(block))
+                    || this.bombs.stream().anyMatch(b -> b.getVolume().contains(block))
+                    || this.cakes.stream().anyMatch(c -> c.getVolume().contains(block))) {
+                return true;
             }
             for (Team t : this.teams) {
                 for (Volume tVolume : t.getSpawnVolumes().values()) {
@@ -727,9 +713,6 @@ public class Warzone {
                 if (t.getFlagVolume() != null && t.getFlagVolume().contains(block)) {
                     return true;
                 }
-            }
-            if (this.volume.isWallBlock(block)) {
-                return true;
             }
         }
         return false;
@@ -781,7 +764,7 @@ public class Warzone {
     }
 
     public List<Block> getNearestWallBlocks(Location latestPlayerLocation) {
-        List<Block> nearestWallBlocks = new ArrayList<Block>();
+        List<Block> nearestWallBlocks = new ArrayList<>();
         if (Math.abs(this.volume.getSoutheastZ() - latestPlayerLocation.getBlockZ()) < this.minSafeDistanceFromWall && latestPlayerLocation.getBlockX() <= this.volume.getSoutheastX() && latestPlayerLocation.getBlockX() >= this.volume.getNorthwestX() && latestPlayerLocation.getBlockY() >= this.volume.getMinY() && latestPlayerLocation.getBlockY() <= this.volume.getMaxY()) {
             // near east wall
             Block eastWallBlock = this.world.getBlockAt(latestPlayerLocation.getBlockX() + 1, latestPlayerLocation.getBlockY() + 1, this.volume.getSoutheastZ());
@@ -822,7 +805,7 @@ public class Warzone {
     }
 
     public List<BlockFace> getNearestWalls(Location latestPlayerLocation) {
-        List<BlockFace> walls = new ArrayList<BlockFace>();
+        List<BlockFace> walls = new ArrayList<>();
         if (Math.abs(this.volume.getSoutheastZ() - latestPlayerLocation.getBlockZ()) < this.minSafeDistanceFromWall && latestPlayerLocation.getBlockX() <= this.volume.getSoutheastX() && latestPlayerLocation.getBlockX() >= this.volume.getNorthwestX() && latestPlayerLocation.getBlockY() >= this.volume.getMinY() && latestPlayerLocation.getBlockY() <= this.volume.getMaxY()) {
             // near east wall
             walls.add(Direction.EAST());
@@ -883,7 +866,7 @@ public class Warzone {
     }
 
     public void dropZoneWallGuardIfAny(Player player) {
-        List<ZoneWallGuard> playerGuards = new ArrayList<ZoneWallGuard>();
+        List<ZoneWallGuard> playerGuards = new ArrayList<>();
         for (ZoneWallGuard guard : this.zoneWallGuards) {
             if (guard.getPlayer().getName().equals(player.getName())) {
                 playerGuards.add(guard);
@@ -965,8 +948,6 @@ public class Warzone {
             location.getWorld().dropItem(location, item);
         }
     }
-
-    private Random killSeed = new Random();
 
     /**
      * Send death messages and process other records before passing off the
@@ -1188,21 +1169,11 @@ public class Warzone {
     }
 
     public boolean isEnemyTeamFlagBlock(Team playerTeam, Block block) {
-        for (Team team : this.teams) {
-            if (!team.getName().equals(playerTeam.getName()) && team.isTeamFlagBlock(block)) {
-                return true;
-            }
-        }
-        return false;
+        return this.teams.stream().anyMatch(t -> !t.getName().equals(playerTeam.getName()) && t.isTeamFlagBlock(block));
     }
 
     public boolean isFlagBlock(Block block) {
-        for (Team team : this.teams) {
-            if (team.isTeamFlagBlock(block)) {
-                return true;
-            }
-        }
-        return false;
+        return this.teams.stream().anyMatch(t -> t.isTeamFlagBlock(block));
     }
 
     public Team getTeamForFlagBlock(Block block) {
@@ -1215,12 +1186,7 @@ public class Warzone {
     }
 
     public boolean isBombBlock(Block block) {
-        for (Bomb bomb : this.bombs) {
-            if (bomb.isBombBlock(block.getLocation())) {
-                return true;
-            }
-        }
-        return false;
+        return this.bombs.stream().anyMatch(b -> b.isBombBlock(block.getLocation()));
     }
 
     public Bomb getBombForBlock(Block block) {
@@ -1233,12 +1199,7 @@ public class Warzone {
     }
 
     public boolean isCakeBlock(Block block) {
-        for (Cake cake : this.cakes) {
-            if (cake.isCakeBlock(block.getLocation())) {
-                return true;
-            }
-        }
-        return false;
+        return this.cakes.stream().anyMatch(c -> c.isCakeBlock(block.getLocation()));
     }
 
     public Cake getCakeForBlock(Block block) {
@@ -1258,10 +1219,7 @@ public class Warzone {
     }
 
     public boolean isFlagThief(String suspect) {
-        if (this.flagThieves.containsKey(suspect)) {
-            return true;
-        }
-        return false;
+        return this.flagThieves.containsKey(suspect);
     }
 
     public Team getVictimTeamForFlagThief(String thief) {
@@ -1280,10 +1238,7 @@ public class Warzone {
     }
 
     public boolean isBombThief(String suspect) {
-        if (this.bombThieves.containsKey(suspect)) {
-            return true;
-        }
-        return false;
+        return this.bombThieves.containsKey(suspect);
     }
 
     public Bomb getBombForThief(String thief) {
@@ -1302,10 +1257,7 @@ public class Warzone {
     }
 
     public boolean isCakeThief(String suspect) {
-        if (this.cakeThieves.containsKey(suspect)) {
-            return true;
-        }
-        return false;
+        return this.cakeThieves.containsKey(suspect);
     }
 
     public Cake getCakeForThief(String thief) {
@@ -1323,12 +1275,7 @@ public class Warzone {
     }
 
     public boolean isTeamFlagStolen(Team team) {
-        for (String playerKey : this.flagThieves.keySet()) {
-            if (this.flagThieves.get(playerKey).getName().equals(team.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return this.flagThieves.values().stream().anyMatch(team.getName()::equals);
     }
 
     public void handleScoreCapReached(String winnersStr) {
@@ -1404,10 +1351,7 @@ public class Warzone {
     }
 
     public boolean isDeadMan(String playerName) {
-        if (this.deadMenInventories.containsKey(playerName)) {
-            return true;
-        }
-        return false;
+        return this.deadMenInventories.containsKey(playerName);
     }
 
     public void restoreDeadmanInventory(Player player) {
@@ -1450,10 +1394,7 @@ public class Warzone {
                 teamsWithEnough++;
             }
         }
-        if (teamsWithEnough >= this.getWarzoneConfig().getInt(WarzoneConfig.MINTEAMS)) {
-            return true;
-        }
-        return false;
+        return teamsWithEnough >= this.getWarzoneConfig().getInt(WarzoneConfig.MINTEAMS);
     }
 
     public HashMap<String, LoadoutSelection> getLoadoutSelections() {
@@ -1462,7 +1403,7 @@ public class Warzone {
 
     public boolean isAuthor(Player player) {
         // if no authors, all zonemakers can edit the zone
-        return authors.size() == 0 || authors.contains(player.getName());
+        return authors.isEmpty() || authors.contains(player.getName());
     }
 
     public void addAuthor(String playerName) {
@@ -1474,11 +1415,9 @@ public class Warzone {
     }
 
     public String getAuthorsString() {
-        String authors = "";
-        for (String author : this.getAuthors()) {
-            authors += author + ",";
-        }
-        return authors;
+        StringBuilder sb = new StringBuilder();
+        this.getAuthors().forEach(a -> sb.append(a).append(","));
+        return sb.toString();
     }
 
     public void equipPlayerLoadoutSelection(Player player, Team playerTeam, boolean isFirstRespawn, boolean isToggle) {
@@ -1530,12 +1469,12 @@ public class Warzone {
     }
 
     private HashMap<Integer, ItemStack> getPlayerInventoryFromSavedState(Player player) {
-        HashMap<Integer, ItemStack> playerItems = new HashMap<Integer, ItemStack>();
+        HashMap<Integer, ItemStack> playerItems = new HashMap<>();
         PlayerState originalState = this.playerStates.get(player.getName());
 
         if (originalState != null) {
             int invIndex = 0;
-            playerItems = new HashMap<Integer, ItemStack>();
+            playerItems = new HashMap<>();
             for (ItemStack item : originalState.getContents()) {
                 if (item != null && item.getType() != Material.AIR) {
                     playerItems.put(invIndex, item);
@@ -1692,23 +1631,10 @@ public class Warzone {
      * Send a message to all teams.
      *
      * @param message Message or key to translate.
-     */
-    public void broadcast(String message) {
-        for (Team team : this.teams) {
-            team.teamcast(message);
-        }
-    }
-
-    /**
-     * Send a message to all teams.
-     *
-     * @param message Message or key to translate.
      * @param args Arguments for the formatter.
      */
     public void broadcast(String message, Object... args) {
-        for (Team team : this.teams) {
-            team.teamcast(message, args);
-        }
+        this.teams.forEach(t -> t.teamcast(message, args));
     }
 
     /**
@@ -1718,10 +1644,8 @@ public class Warzone {
      * @return list containing all team players.
      */
     public List<Player> getPlayers() {
-        List<Player> players = new ArrayList<Player>();
-        for (Team team : this.teams) {
-            players.addAll(team.getPlayers());
-        }
+        List<Player> players = new ArrayList<>();
+        this.teams.stream().map(t -> t.getPlayers()).forEach(players::addAll);
         return players;
     }
 
@@ -1748,12 +1672,11 @@ public class Warzone {
      */
     public int getPlayerCount(Permissible target) {
         int playerCount = 0;
-        for (Team team : this.teams) {
-            if (target.hasPermission(team.getTeamConfig().resolveString(
-                    TeamConfig.PERMISSION))) {
-                playerCount += team.getPlayers().size();
-            }
-        }
+        this.teams.stream().filter(t -> {
+            return target.hasPermission(t.getTeamConfig().resolveString(TeamConfig.PERMISSION));
+        })
+                .map(t -> t.getPlayers().size())
+                .reduce(playerCount, Integer::sum);
         return playerCount;
     }
 

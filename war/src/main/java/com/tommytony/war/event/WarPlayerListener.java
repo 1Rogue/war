@@ -50,7 +50,7 @@ import java.io.File;
 import java.util.logging.Level;
 
 /**
- * @author tommytony, Tim Düsterhus
+ * @author tommytony, Tim DÃ¼sterhus
  */
 public class WarPlayerListener implements Listener {
 

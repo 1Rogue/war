@@ -404,37 +404,11 @@ public class Team {
         return this.players;
     }
 
-    public void teamcast(String message) {
-        // by default a teamcast is a notification
-        teamcast(message, true);
-    }
-
-    public void teamcast(String message, boolean isNotification) {
-        for (Player player : this.players) {
-            if (War.war.isSpoutServer()) {
-                SpoutPlayer sp = SpoutManager.getPlayer(player);
-                if (sp.isSpoutCraftEnabled() && isNotification) {
-                    // team notifications go to the top left for Spout players to lessen War spam in chat box
-                    War.war.getSpoutDisplayer().msg(sp, message);
-                } else {
-                    War.war.msg(player, message);
-                }
-            } else {
-                War.war.msg(player, message);
-            }
-        }
-    }
-
     public void teamcast(String message, Object... args) {
-        // by default a teamcast is a notification
-        teamcast(message, true, args);
-    }
-
-    public void teamcast(String message, boolean isNotification, Object... args) {
         for (Player player : this.players) {
             if (War.war.isSpoutServer()) {
                 SpoutPlayer sp = SpoutManager.getPlayer(player);
-                if (sp.isSpoutCraftEnabled() && isNotification) {
+                if (sp.isSpoutCraftEnabled()) {
                     // team notifications go to the top left for Spout players to lessen War spam in chat box
                     War.war.getSpoutDisplayer().msg(sp, MessageFormat.format(message, args));
                 } else {
@@ -513,7 +487,7 @@ public class Team {
     }
 
     public void addPoint() {
-        boolean atLeastOnePlayerOnTeam = this.players.size() != 0;
+        boolean atLeastOnePlayerOnTeam = !this.players.isEmpty();
         boolean atLeastOnePlayerOnOtherTeam = false;
         for (Team team : this.warzone.getTeams()) {
             if (!team.getName().equals(this.getName()) && team.getPlayers().size() > 0) {
@@ -804,7 +778,7 @@ public class Team {
     public void sendTeamChatMessage(OfflinePlayer sender, String message) {
         String player = this.getKind().getColor() + ChatColor.stripColor(sender.getName()) + ChatColor.WHITE;
         String output = String.format("%s: %s", player, message);
-        teamcast(output, false);
+        this.players.forEach(p -> War.war.msg(p, message));
         War.war.getLogger().info("[TeamChat] " + output);
     }
 

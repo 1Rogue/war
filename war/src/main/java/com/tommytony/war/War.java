@@ -1234,10 +1234,7 @@ public class War extends JavaPlugin {
     }
 
     public boolean inAnyWarzoneLobby(Location location) {
-        if (ZoneLobby.getLobbyByLocation(location) == null) {
-            return false;
-        }
-        return true;
+        return ZoneLobby.getLobbyByLocation(location) != null;
     }
 
     public List<String> getZoneMakersImpersonatingPlayers() {
