@@ -42,17 +42,17 @@
     </repositories>
     <issueManagement>
         <system>Github issues</system>
-        <url>https://github.com/taoneill/war/issues</url>
+        <url>https://github.com/1Rogue/war/issues</url>
     </issueManagement>
     <ciManagement>
         <system>Jenkins</system>
         <url>http://ci.tommytony.com</url>
     </ciManagement>
     <scm>
-        <connection>scm:git:git://github.com/taoneill/war.git</connection>
-        <developerConnection>scm:git:git@github.com:taoneill/war.git</developerConnection>
+        <connection>scm:git:git://github.com/1Rogue/war.git</connection>
+        <developerConnection>scm:git:git@github.com:1Rogue/war.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/taoneill/war</url>
+        <url>https://github.com/1Rogue/war</url>
     </scm>
     <build>
         <plugins>
