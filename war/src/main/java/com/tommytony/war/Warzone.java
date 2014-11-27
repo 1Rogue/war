@@ -173,10 +173,25 @@ public class Warzone {
                         .filter(l -> l.getName().equals(kit)).findFirst();
                 if (lod.isPresent()) {
                     Loadout ld = lod.get();
-                    
-                    //Need to find a way to specify the "selected index"
-                    
-                    p.closeInventory();
+                    LoadoutSelection lds = Warzone.this.getLoadoutSelections().get(p.getName());
+                    if (lds != null) {
+                        // Having to steal this from author's code - forgive me for my sins
+                        List<Loadout> loadouts = team.getInventories().resolveNewLoadouts();
+                        List<String> sortedNames = LoadoutYmlMapper.sortNames(Loadout.toLegacyFormat(loadouts));
+                        sortedNames.remove("first");
+                        for (Iterator<String> it = sortedNames.iterator(); it.hasNext();) {
+                            String loadoutName = it.next();
+                            Loadout ldt = Loadout.getLoadout(loadouts, loadoutName);
+                            if (ldt.requiresPermission() && !p.hasPermission(ldt.getPermission())) {
+                                it.remove();
+                            }
+                        }
+                        //end of that
+                        int i = sortedNames.indexOf(ld.getName());
+                        if (i > -1) {
+                            lds.setSelectedIndex(i);
+                        }
+                    }
                     this.equipPlayerLoadoutSelection(p, team, false, true);
                 }
             }
