@@ -1,5 +1,9 @@
 package com.tommytony.war;
 
+import com.codelanx.codelanxlib.inventory.Execution;
+import com.codelanx.codelanxlib.inventory.InventoryInterface;
+import com.codelanx.codelanxlib.inventory.InventoryPanel;
+import com.codelanx.codelanxlib.inventory.MenuIcon;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -84,7 +88,12 @@ import com.tommytony.war.utility.PlayerState;
 import com.tommytony.war.utility.PotionEffectHelper;
 import com.tommytony.war.volume.Volume;
 import com.tommytony.war.volume.ZoneVolume;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  *
@@ -144,6 +153,7 @@ public class Warzone {
     private boolean isEndOfGame = false;
     private boolean isReinitializing = false;
     //private final Object gameEndLock = new Object();
+    private final Map<String, InventoryInterface> iis = new HashMap<>();
 
     public Warzone(World world, String name) {
         this.world = world;
@@ -152,6 +162,40 @@ public class Warzone {
         this.teamDefaultConfig = new TeamConfigBag();	// don't use ctor with Warzone, as this changes config resolution
         this.volume = new ZoneVolume(name, this.getWorld(), this);
         this.lobbyMaterials = War.war.getWarhubMaterials().clone();
+        
+        /////////// START INVENTORY MANAGEMENT ///////////
+        Execution exe = (Execution) (Player p, InventoryInterface ii1, MenuIcon icon) -> {
+            Object val = icon.getOptions().get("kit-name");
+            if (val != null) {
+                String kit = val.toString();
+                Team team = Team.getTeamByPlayerName(p.getName());
+                Optional<Loadout> lod = team.getInventories().resolveNewLoadouts().stream()
+                        .filter(l -> l.getName().equals(kit)).findFirst();
+                if (lod.isPresent()) {
+                    Loadout ld = lod.get();
+                    
+                    //Need to find a way to specify the "selected index"
+                    
+                    p.closeInventory();
+                    this.equipPlayerLoadoutSelection(p, team, false, true);
+                }
+            }
+        };
+        File kits = new File(War.war.getDataFolder(), "warzone-kits" + File.separatorChar + this.name + File.separatorChar);
+        kits.mkdirs();
+        try {
+            Files.list(kits.toPath()).forEach(f -> {
+                InventoryInterface iif = InventoryInterface.deserialize(War.war, f.toFile());
+                String teamName = f.getFileName().toString();
+                teamName = teamName.substring(0, teamName.lastIndexOf("."));
+                iif.getPanels().forEach(ip -> ip.setAllExecutions(exe));
+                this.iis.put(teamName, iif);
+            });
+        } catch (IOException ex) {
+            War.war.getLogger().log(Level.SEVERE, "Error reading kit selections, kit selecting disabled!", ex);
+        }
+        /////////// END INVENTORY MANAGEMENT ///////////
+
     }
 
     public static Warzone getZoneByName(String name) {
@@ -1848,7 +1892,11 @@ public class Warzone {
      * @param p The {@link Player} to open a kit menu for 
      */
     public void openKitSelection(Player p) {
-        
+        Team t = Team.getTeamByPlayerName(p.getName());
+        InventoryInterface ii = this.iis.get(t.getName());
+        if (ii != null) {
+            ii.openInterface(p);
+        }
     }
 
 }
