@@ -89,11 +89,9 @@ import com.tommytony.war.utility.PotionEffectHelper;
 import com.tommytony.war.volume.Volume;
 import com.tommytony.war.volume.ZoneVolume;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  *
@@ -193,6 +191,8 @@ public class Warzone {
                         }
                     }
                     this.equipPlayerLoadoutSelection(p, team, false, true);
+                } else {
+                    p.sendMessage(ChatColor.RED + String.format("Could not find a kit by the name '%s'! Configuration issue :(", kit));
                 }
             }
         };
