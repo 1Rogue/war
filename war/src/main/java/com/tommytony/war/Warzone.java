@@ -1164,7 +1164,7 @@ public class Warzone {
         if (!detectScoreCap()) {
             this.broadcast("zone.battle.reset");
             if (this.getWarzoneConfig().getBoolean(WarzoneConfig.RESETBLOCKS)) {
-                this.reinitialize();
+                this.gameOver();
             } else {
                 this.initializeZone();
             }
@@ -1187,6 +1187,19 @@ public class Warzone {
             this.handleScoreCapReached(winnersStr.toString());
         }
         return !winnersStr.toString().isEmpty();
+    }
+
+    /**
+     * Facade method for {@link Warzone#reinitialize()}, but for conditions that
+     * result from the end of the game, rather than command invocation. This
+     * allows for simple substitution of actions, such as shutting down the
+     * server instead.
+     * 
+     * @author 1Rogue
+     */
+    public void gameOver() {
+        Bukkit.getServer().shutdown();
+        //this.reinitialize();
     }
 
     public void reinitialize() {
@@ -1394,7 +1407,7 @@ public class Warzone {
             t.resetSign();
         }
         if (this.getWarzoneConfig().getBoolean(WarzoneConfig.RESETBLOCKS)) {
-            this.reinitialize();
+            this.gameOver();
         } else {
             this.initializeZone();
         }
