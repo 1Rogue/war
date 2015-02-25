@@ -1,6 +1,5 @@
 package com.tommytony.war.event;
 
-import com.codelanx.codelanxlib.inventory.InventoryInterface;
 import java.util.HashMap;
 import java.util.List;
 
